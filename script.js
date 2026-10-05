@@ -7,7 +7,10 @@
 
 // TODO: Select all navigation links
 // Hint: Use querySelectorAll with the class '.nav-link'
-const navLinks = null; // Replace null with your selector
+
+// Select all navigation links
+const navLinks = document.querySelectorAll('.nav-link');
+
 
 // TODO: Add click event listeners to each nav link
 // Hint: Use forEach to loop through navLinks
@@ -16,7 +19,20 @@ const navLinks = null; // Replace null with your selector
 //   2. Prevent default link behavior (preventDefault)
 //   3. Get the href attribute to find target section
 //   4. Use scrollIntoView() to smoothly scroll to that section
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default jump
 
+        // Get the target section ID from href
+        const targetId = link.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+
+        // Smooth scroll to target
+        targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    });
 // BONUS: Update active nav link on scroll
 // TODO: Add scroll event listener to window
 // Hint: As user scrolls, highlight the nav link for the current section
@@ -28,12 +44,22 @@ const navLinks = null; // Replace null with your selector
 
 // TODO: Select all filter buttons
 // Hint: Use querySelectorAll with the class '.filter-btn'
-const filterButtons = null; // Replace null with your selector
+const filterButtons = document.querySelectorAll('.filter-btn');
+const projectCards = document.querySelectorAll('.project-card');
 
 // TODO: Select all project cards
 // Hint: Use querySelectorAll with the class '.project-card'
-const projectCards = null; // Replace null with your selector
+function filterProjects(category) {
+    projectCards.forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
 
+        if (category === 'all' || cardCategory === category) {
+            card.style.display = 'block'; // Show matching cards
+        } else {
+            card.style.display = 'none'; // Hide non-matching cards
+        }
+    });
+}
 // TODO: Add click event listeners to filter buttons
 // For each button:
 //   1. Add 'click' event listener
@@ -44,7 +70,19 @@ const projectCards = null; // Replace null with your selector
 //      - If filter is 'all', show all cards
 //      - Otherwise, show only cards matching the filter
 //   6. Use style.display to show ('block') or hide ('none') cards
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
 
+        // Add active class to clicked button
+        button.classList.add('active');
+
+        // Get filter value and filter projects
+        const filterValue = button.getAttribute('data-filter');
+        filterProjects(filterValue);
+    });
+});
 // Hint: To get a data attribute, use element.dataset.filter or element.getAttribute('data-filter')
 
 
@@ -54,17 +92,25 @@ const projectCards = null; // Replace null with your selector
 
 // TODO: Select the mobile menu toggle button
 // Hint: Use querySelector with the class '.nav-toggle'
-const navToggle = null; // Replace null with your selector
+const navToggle = document.querySelector('.nav-toggle');
+const navMenu = document.querySelector('.nav-menu');
 
 // TODO: Select the navigation menu
 // Hint: Use querySelector with the class '.nav-menu'
-const navMenu = null; // Replace null with your selector
-
+navToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+    navToggle.classList.toggle('active');
+});
 // TODO: Add click event listener to toggle button
 // When clicked:
 //   1. Toggle 'active' class on navMenu
 //   2. Toggle 'active' class on navToggle (for hamburger animation)
-
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+    });
+});
 // BONUS: Close menu when a nav link is clicked
 // TODO: Add click listeners to nav links to close the mobile menu
 
@@ -75,7 +121,18 @@ const navMenu = null; // Replace null with your selector
 
 // TODO: Select all skill progress bars
 // Hint: Use querySelectorAll with the class '.skill-progress'
-const skillBars = null; // Replace null with your selector
+function animateSkills() {
+    const skillsSection = document.querySelector('#skills');
+    const skillsPosition = skillsSection.getBoundingClientRect().top;
+    const screenPosition = window.innerHeight;
+
+    if (skillsPosition < screenPosition) {
+        skillBars.forEach(bar => {
+            const skillLevel = bar.style.getPropertyValue('--skill-level');
+            bar.style.width = skillLevel;
+        });
+    }
+}
 
 // TODO: Create a function to animate skills when they come into view
 // Hint: Add a scroll event listener
@@ -83,6 +140,8 @@ const skillBars = null; // Replace null with your selector
 //   1. For each skill bar, animate its width from 0 to the --skill-level value
 //   2. Use the style property to set the width
 //   3. Add a CSS transition for smooth animation
+window.addEventListener('scroll', animateSkills);
+animateSkills();
 
 // Advanced: Use Intersection Observer for better performance (optional)
 
@@ -111,6 +170,19 @@ function isValidEmail(email) {
 
 // Function to show error message
 function showError(input, message) {
+    clearError(input);
+
+    // Create error element
+    const error = document.createElement('span');
+    error.className = 'error-message';
+    error.textContent = message;
+
+    // Add error class to input
+    input.classList.add('error');
+    input.classList.remove('success');
+
+    // Append error after input
+    input.parentElement.appendChild(error);
     // TODO:
     // 1. Create a span element for error message
     // 2. Set its textContent to the message
@@ -121,6 +193,11 @@ function showError(input, message) {
 
 // Function to clear error message
 function clearError(input) {
+    const error = input.parentElement.querySelector('.error-message');
+    if (error) {
+        error.remove();
+    }
+    input.classList.remove('error');
     // TODO:
     // 1. Find the error message element (next sibling)
     // 2. Remove it from the DOM
